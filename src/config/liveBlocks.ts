@@ -5,7 +5,7 @@ import {
   LsonObject
 } from '@liveblocks/client'
 import { createRoomContext } from '@liveblocks/react'
-import { IRectangle } from '../components/Playground/Elements/Rectangle/Rectangle'
+import { IRectangle } from '../components/Playground/Canvas/Shapes/Rectangle'
 import { ICursor } from '../components/Playground/Elements/Cursor/Cursor'
 
 const client = createClient({
@@ -27,5 +27,7 @@ export const {
   useOthers,
   useMyPresence,
   useUpdateMyPresence,
-  useMap
+  useMap,
+  useUndo,
+  useRedo
 } = createRoomContext<TPresence, TStorage>(client)

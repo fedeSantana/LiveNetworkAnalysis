@@ -1,19 +1,12 @@
-const COLORS = ['#DC2626', '#D97706', '#059669', '#7C3AED', '#DB2777']
+import { IShape } from '@/components/Playground/Canvas/Shapes'
+import { IShapes } from '@/config/liveBlocks'
 
-function getRandomColor() {
-  return COLORS[getRandomInt(COLORS.length)]
-}
-
-function getRandomInt(max: number) {
-  return Math.floor(Math.random() * max)
-}
-
-const insertRectangle = (shapes: any) => {
+const insertRectangle = (shapes: IShapes, shape: IShape) => {
   const shapeId = Date.now().toString()
   const rectangle = {
-    x: getRandomInt(300),
-    y: getRandomInt(300),
-    fill: getRandomColor()
+    x: shape.x,
+    y: shape.y,
+    fill: shape.fill
   }
   shapes.set(shapeId, rectangle)
 }

@@ -1,19 +1,44 @@
+import React from 'react'
 import { IShapes, useUpdateMyPresence } from '../../../config/liveBlocks'
-import Rectangle from '../Elements/Rectangle/Rectangle'
+import Rectangle from './Shapes/Rectangle'
 import Cursor, { ICursor } from '../Elements/Cursor/Cursor'
 import styles from './Canvas.module.css'
+import SelectedShape, { ShapesNames } from './Shapes'
+import useMousePosition from '@/hooks/useMousePosition'
+import { ClickEventsNames } from '../ClickEvents/ClickEventsNames'
+import insertRectangle from '../Elements/Toolsbar/Functions/insertRectangle'
 
 interface ICanvas {
   shapes: IShapes
   cursors: ICursor[]
+  selectedShape: ShapesNames | false
+  setSelectedShape: React.Dispatch<
+    React.SetStateAction<false | ShapesNames>
+  >
 }
 
-function Canvas({ shapes, cursors }: ICanvas) {
+const COLORS = ['#DC2626', '#D97706', '#059669', '#7C3AED', '#DB2777']
+
+function getRandomInt(max: number) {
+  return Math.floor(Math.random() * max)
+}
+
+function getRandomColor(): string {
+  return COLORS[getRandomInt(COLORS.length)]
+}
+
+function Canvas({
+  shapes,
+  cursors,
+  selectedShape,
+  setSelectedShape
+}: ICanvas) {
   const updateMyPresence = useUpdateMyPresence()
 
-  const Cursors = cursors.map((cursor) => (
+  const otherCursors = cursors.map((cursor) => (
     <Cursor x={cursor.x} y={cursor.y} color={cursor.color} />
   ))
+  const myCursor = useMousePosition()
 
   return (
     <div
@@ -21,6 +46,15 @@ function Canvas({ shapes, cursors }: ICanvas) {
       onPointerMove={(e) =>
         updateMyPresence({ cursor: { x: e.clientX, y: e.clientY } })
       }
+      onClick={() => {
+        selectedShape &&
+          insertRectangle(shapes, {
+            name: 'Rectangle',
+            x: myCursor.x ?? 0,
+            y: myCursor.y ?? 0,
+            fill: '#D97706'
+          })
+      }}
     >
       {Array.from(shapes, ([shapeId, shape]) => {
         return (
@@ -32,7 +66,15 @@ function Canvas({ shapes, cursors }: ICanvas) {
           />
         )
       })}
-      {Cursors}
+      {otherCursors}
+      {selectedShape && myCursor.x && myCursor.y && (
+        <SelectedShape
+          name={selectedShape}
+          x={myCursor.x}
+          y={myCursor.y}
+          fill={'#D97706'}
+        />
+      )}
     </div>
   )
 }
