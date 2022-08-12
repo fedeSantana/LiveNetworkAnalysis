@@ -8,6 +8,8 @@ import { createRoomContext } from '@liveblocks/react'
 import { IRectangle } from '../components/Playground/Canvas/Shapes/Rectangle'
 import { ICursor } from '../components/Playground/Elements/Cursor/Cursor'
 
+console.info('public key:', import.meta.env.VITE_liveBlocksPublicKey)
+
 const client = createClient({
   publicApiKey: import.meta.env.VITE_liveBlocksPublicKey
 })
