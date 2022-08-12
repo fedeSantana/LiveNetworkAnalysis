@@ -7,10 +7,11 @@ import SelectedShape, { ShapesNames } from './Shapes'
 import useMousePosition from '@/hooks/useMousePosition'
 import { ClickEventsNames } from '../ClickEvents/ClickEventsNames'
 import insertRectangle from '../Elements/Toolsbar/Functions/insertRectangle'
+import { otherCursor } from '../Playground'
 
 interface ICanvas {
   shapes: IShapes
-  cursors: ICursor[]
+  cursors: otherCursor[]
   selectedShape: ShapesNames | false
   setSelectedShape: React.Dispatch<
     React.SetStateAction<false | ShapesNames>
@@ -36,7 +37,12 @@ function Canvas({
   const updateMyPresence = useUpdateMyPresence()
 
   const otherCursors = cursors.map((cursor) => (
-    <Cursor x={cursor.x} y={cursor.y} color={cursor.color} />
+    <Cursor
+      x={cursor.x}
+      y={cursor.y}
+      color={COLORS[cursor.id % COLORS.length]}
+      key={cursor.id}
+    />
   ))
   const myCursor = useMousePosition()
 

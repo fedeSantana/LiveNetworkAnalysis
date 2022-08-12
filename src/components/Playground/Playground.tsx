@@ -15,6 +15,10 @@ import { ClickEventsNames } from './ClickEvents/ClickEventsNames'
 import Undo from './Elements/Toolsbar/Elements/Undo'
 import Redo from './Elements/Toolsbar/Elements/Redo'
 
+export interface otherCursor extends ICursor {
+  id: number
+}
+
 type ToolbarTools =
   | 'pointer'
   | 'rectangle'
@@ -27,7 +31,10 @@ function Playground() {
   const others = useOthers()
   const othersCursors = others.map((user) => {
     if (user.presence) {
-      return user.presence.cursor
+      return {
+        ...user.presence.cursor,
+        id: user.connectionId
+      }
     }
   })
   const [selectedShape, setSelectedShape] = useState<ShapesNames | false>(
@@ -38,7 +45,7 @@ function Playground() {
   >(false)
 
   const otherCursorsDefined = othersCursors.filter(
-    (cursor): cursor is ICursor => cursor != undefined
+    (cursor): cursor is otherCursor => cursor != undefined
   )
   const shapes = useMap('shapes')
 
