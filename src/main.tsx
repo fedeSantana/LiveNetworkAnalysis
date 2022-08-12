@@ -5,7 +5,7 @@ import { RoomProvider } from './config/liveBlocks'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <RoomProvider id="my-room-id">
+    <RoomProvider id="livenetworkanalysis">
       <App />
     </RoomProvider>
   </React.StrictMode>
