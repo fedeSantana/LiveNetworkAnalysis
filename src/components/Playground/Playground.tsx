@@ -42,12 +42,12 @@ function Playground() {
   )
   const shapes = useMap('shapes')
 
+  const undo = useUndo()
+  const redo = useRedo()
+
   if (shapes == null) {
     return <div className="loading">Loading</div>
   }
-
-  const undo = useUndo()
-  const redo = useRedo()
 
   const buttons: IIconButton[] = [
     {
