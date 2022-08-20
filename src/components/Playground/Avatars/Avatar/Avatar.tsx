@@ -11,8 +11,6 @@ export default function Avatar({
   name: string
   backgroundColor: string
 }) {
-  console.info('backgroundColor:', backgroundColor)
-
   const color = '%239a9996'
   return (
     <div className={styles.avatar}>
