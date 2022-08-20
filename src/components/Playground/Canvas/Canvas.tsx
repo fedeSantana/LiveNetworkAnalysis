@@ -1,13 +1,14 @@
 import React from 'react'
 import { IShapes, useUpdateMyPresence } from '../../../config/liveBlocks'
 import Rectangle from './Shapes/Rectangle'
-import Cursor, { ICursor } from '../Elements/Cursor/Cursor'
+import Cursor from '../Elements/Cursor/Cursor'
 import styles from './Canvas.module.css'
 import SelectedShape, { ShapesNames } from './Shapes'
 import useMousePosition from '@/hooks/useMousePosition'
-import { ClickEventsNames } from '../ClickEvents/ClickEventsNames'
 import insertRectangle from '../Elements/Toolsbar/Functions/insertRectangle'
-import { otherCursor } from '../Playground'
+import { otherCursor, ToolbarTools } from '../Playground'
+import { getRandomColor } from '@/Utils/getRandomColor'
+import { CanvasMode } from './CanvasMode'
 
 interface ICanvas {
   shapes: IShapes
@@ -16,23 +17,21 @@ interface ICanvas {
   setSelectedShape: React.Dispatch<
     React.SetStateAction<false | ShapesNames>
   >
-}
-
-const COLORS = ['#DC2626', '#D97706', '#059669', '#7C3AED', '#DB2777']
-
-function getRandomInt(max: number) {
-  return Math.floor(Math.random() * max)
-}
-
-function getRandomColor(): string {
-  return COLORS[getRandomInt(COLORS.length)]
+  canvasMode: CanvasMode
+  setCanvasMode: React.Dispatch<React.SetStateAction<CanvasMode>>
+  setToolbarElementActive: React.Dispatch<
+    React.SetStateAction<false | ToolbarTools>
+  >
 }
 
 function Canvas({
   shapes,
   cursors,
   selectedShape,
-  setSelectedShape
+  setCanvasMode,
+  setSelectedShape,
+  setToolbarElementActive,
+  canvasMode
 }: ICanvas) {
   const updateMyPresence = useUpdateMyPresence()
 
@@ -40,7 +39,7 @@ function Canvas({
     <Cursor
       x={cursor.x}
       y={cursor.y}
-      color={COLORS[cursor.id % COLORS.length]}
+      color={getRandomColor(cursor.id)}
       key={cursor.id}
     />
   ))
@@ -49,17 +48,25 @@ function Canvas({
   return (
     <div
       className={styles.Canvas}
-      onPointerMove={(e) =>
-        updateMyPresence({ cursor: { x: e.clientX, y: e.clientY } })
-      }
+      onPointerMove={(e) => {
+        if (canvasMode === CanvasMode.SelectionNet) {
+          updateMyPresence({ cursor: { x: e.clientX, y: e.clientY } })
+        } else {
+          updateMyPresence({ cursor: { x: 0, y: 0 } })
+        }
+      }}
       onClick={() => {
-        selectedShape &&
+        if (selectedShape && canvasMode === CanvasMode.Inserting) {
           insertRectangle(shapes, {
             name: 'Rectangle',
             x: myCursor.x ?? 0,
             y: myCursor.y ?? 0,
             fill: '#D97706'
           })
+          setSelectedShape(false)
+          setCanvasMode(CanvasMode.None)
+          setToolbarElementActive(false)
+        }
       }}
     >
       {Array.from(shapes, ([shapeId, shape]) => {
@@ -73,14 +80,17 @@ function Canvas({
         )
       })}
       {otherCursors}
-      {selectedShape && myCursor.x && myCursor.y && (
-        <SelectedShape
-          name={selectedShape}
-          x={myCursor.x}
-          y={myCursor.y}
-          fill={'#D97706'}
-        />
-      )}
+      {canvasMode === CanvasMode.Inserting &&
+        selectedShape &&
+        myCursor.x &&
+        myCursor.y && (
+          <SelectedShape
+            name={selectedShape}
+            x={myCursor.x}
+            y={myCursor.y}
+            fill={'#D97706'}
+          />
+        )}
     </div>
   )
 }

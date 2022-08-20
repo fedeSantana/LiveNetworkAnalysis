@@ -1,9 +1,8 @@
 import { useMap, useOthers, useRedo, useUndo } from '@/config/liveBlocks'
-import { useState } from 'react'
+import { useReducer, useState } from 'react'
 import { IIconButton } from '../Generals/IconButton/IconButton'
 import Canvas from './Canvas/Canvas'
 import { ICursor } from './Elements/Cursor/Cursor'
-import Rectangle, { IRectangle } from './Canvas/Shapes/Rectangle'
 import Box from './Elements/Toolsbar/Elements/Box'
 import Capacitor from './Elements/Toolsbar/Elements/Capacitor'
 import Pointer from './Elements/Toolsbar/Elements/Pointer'
@@ -11,15 +10,16 @@ import Resistor from './Elements/Toolsbar/Elements/Resistor'
 import ToolsBar from './Elements/Toolsbar/ToolsBar'
 import styles from './styles/Playground.module.css'
 import { ShapesNames } from './Canvas/Shapes'
-import { ClickEventsNames } from './ClickEvents/ClickEventsNames'
 import Undo from './Elements/Toolsbar/Elements/Undo'
 import Redo from './Elements/Toolsbar/Elements/Redo'
+import AvatarStack from './Avatars/AvatarStack/AvatarStack'
+import { CanvasMode } from './Canvas/CanvasMode'
 
 export interface otherCursor extends ICursor {
   id: number
 }
 
-type ToolbarTools =
+export type ToolbarTools =
   | 'pointer'
   | 'rectangle'
   | 'resistor'
@@ -47,6 +47,8 @@ function Playground() {
   const otherCursorsDefined = othersCursors.filter(
     (cursor): cursor is otherCursor => cursor != undefined
   )
+
+  const [canvasMode, setCanvasMode] = useState<CanvasMode>(CanvasMode.None)
   const shapes = useMap('shapes')
 
   const undo = useUndo()
@@ -62,6 +64,7 @@ function Playground() {
       isActive: toolbarElementActive === 'pointer',
       onClick: () => {
         setToolbarElementActive('pointer')
+        setCanvasMode(CanvasMode.SelectionNet)
       },
       children: <Pointer />
     },
@@ -71,6 +74,7 @@ function Playground() {
       onClick: () => {
         setSelectedShape('Rectangle')
         setToolbarElementActive('rectangle')
+        setCanvasMode(CanvasMode.Inserting)
       },
       children: <Box />
     },
@@ -79,6 +83,7 @@ function Playground() {
       isActive: toolbarElementActive === 'resistor',
       onClick: () => {
         setToolbarElementActive('resistor')
+        setCanvasMode(CanvasMode.Inserting)
       },
       children: <Resistor />
     },
@@ -87,6 +92,7 @@ function Playground() {
       isActive: toolbarElementActive === 'capacitor',
       onClick: () => {
         setToolbarElementActive('capacitor')
+        setCanvasMode(CanvasMode.Inserting)
       },
       children: <Capacitor />
     },
@@ -96,6 +102,7 @@ function Playground() {
       onClick: () => {
         undo()
         setToolbarElementActive('undo')
+        setCanvasMode(CanvasMode.None)
       },
       children: <Undo />
     },
@@ -105,6 +112,7 @@ function Playground() {
       onClick: () => {
         redo()
         setToolbarElementActive('redo')
+        setCanvasMode(CanvasMode.None)
       },
       children: <Redo />
     }
@@ -112,12 +120,17 @@ function Playground() {
 
   return (
     <div className={styles.Container}>
-      <div>Users: {others.count}</div>
+      <div className={styles.AvatarStackContainer}>
+        <AvatarStack />
+      </div>
       <Canvas
+        canvasMode={canvasMode}
         shapes={shapes}
-        cursors={otherCursorsDefined}
         selectedShape={selectedShape}
+        cursors={otherCursorsDefined}
+        setCanvasMode={setCanvasMode}
         setSelectedShape={setSelectedShape}
+        setToolbarElementActive={setToolbarElementActive}
       />
       <ToolsBar buttons={buttons} />
     </div>

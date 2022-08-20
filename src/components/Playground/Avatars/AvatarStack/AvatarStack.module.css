@@ -1,0 +1,21 @@
+.avatar_stack {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .avatar_stack > * {
+    margin-left: -8px;
+  }
+  
+  .avatar_more {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-width: 4px;
+    border-radius: 64px;
+    border-color: #FFFFFF;
+    background-color: #CFD3DA;
+    color: #000000;
+  }
